@@ -10,7 +10,7 @@ class CalculatorTest {
     void setUp(){
         cal= new Calculator();
     }
-    
+    //checker
     @org.junit.jupiter.api.Test
     void evalTest()  {
         //base test
