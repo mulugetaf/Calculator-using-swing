@@ -5,12 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CalculatorTest {
     Calculator cal ;
-
+    //before each test init cal
     @BeforeEach
     void setUp(){
         cal= new Calculator();
     }
-    //checker
+
     @org.junit.jupiter.api.Test
     void evalTest()  {
         //base test
