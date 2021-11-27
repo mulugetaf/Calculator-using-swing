@@ -39,10 +39,19 @@ class CalculatorTest {
     }
     @org.junit.jupiter.api.Test
     void factorialTest(){
+        //8!
+        assertEquals(cal.Factorial(8),40320);
+        assertEquals(cal.Factorial(5),120);
 
     }
     @org.junit.jupiter.api.Test
-    void binomTest(){
+    void binomialTest(){
+        //8C4
+        assertEquals(cal.Binomial(8,4),70);
+        assertEquals(cal.Binomial(100,2),4950);
+        //throw IllegalArgumentException
+        // 0 ≤ k ≤ n
+        assertThrows(IllegalArgumentException.class,() -> cal.Binomial(3,4));
 
     }
 }

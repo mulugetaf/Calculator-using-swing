@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
@@ -15,7 +16,8 @@ public class Calculator implements ActionListener {
             btnDiv, btnAdd, btnSub, btnxPow, sqrtx, btnPow, btnDel, btnSin,
             btnCos, btnTan, btnCr, btnLog, btnLn, btnDot, btnBracOpen, btnBracClose,
             btnMplus, btnMs, btnMr, btnMc, shiftRig, shiftLef, btnAc;
-    private boolean isEqual = false;
+
+    private static final int MAX_DIGITS = 18;
 //    private Stack<Integer> value, operator;
 
     public Calculator() {
@@ -37,7 +39,19 @@ public class Calculator implements ActionListener {
 
     }
 
+    public  int countDigits(String str) {
+        int count = 0;
+        for (int i = 0; i < str.length(); i++) {
+            //check if charAt(i) is number
+            if (str.charAt(i) >= '0' && str.charAt(i) <= '9') {
+                count++;
+                if(count > MAX_DIGITS) return count;
+            }
+            else count = 0;
 
+        }
+        return count;
+    }
     public static double applyOperator(double b, char op, double a) {
 
         switch (op) {
@@ -80,6 +94,7 @@ public class Calculator implements ActionListener {
 //        str=str.replace("÷","/");
 //        System.out.println(str);
         Calculator cal = new Calculator();
+        cal.Eval("3+3");
 
 //        double n = 8,k=4;
 //        double ans = applyOperator(applyOperator(cal.Factorial(k), '*', cal.Factorial(n - k)), '/', cal.Factorial(n));
@@ -147,7 +162,7 @@ public class Calculator implements ActionListener {
         if (e.equals("7")) input.setText(in + "7");
         if (e.equals("8")) input.setText(in + "8");
         if (e.equals("9")) input.setText(in + "9");
-        if (e.equals(".")) input.setText(in + ".");
+        if(e.equals("•")) input.setText(in + ".");
 
         if (e.equals("+")) input.setText(in + "+");
         if (e.equals("-")) input.setText(in + "-");
@@ -155,18 +170,10 @@ public class Calculator implements ActionListener {
         if (e.equals("÷") || e.equals("/")) input.setText(in + "/");
         if (e.equals("^")) input.setText(in + "^");
 
+
         if (e.equals("C")) input.setText("");
         if (e.equals("√")) input.setText(in + "√");
-        if (e.equals("=")) {
-            System.out.println("=");
-            String ans = "" + Eval(in);
-            try {
-                input.setText(new DecimalFormat("##.####").format(Double.parseDouble(ans)));
-            } catch (Exception ex) {
-                ans = ex.getMessage();
-                input.setText(ans);
-            }
-        }
+
         if (e.equals("^")) input.setText(in + "");
         if (e.equals("Log")) input.setText(in + "Log");
         if (e.equals("Sin")) input.setText(in + "Sin");
@@ -197,9 +204,8 @@ public class Calculator implements ActionListener {
                     count++;
                 }
             }
-                if(n < k) throw new IllegalArgumentException("Error! 0 < k < n");
                 //nCk={n! / k!(n-k)!}
-                String nCr = "" + applyOperator(applyOperator(Factorial(k), '*', Factorial(n - k)), '/', Factorial(n));
+                String nCr = "" + Binomial(n,k);
                 input.setText(in + nCr);
             }
             catch (IllegalArgumentException ex){input.setText(ex.getMessage());}
@@ -211,12 +217,45 @@ public class Calculator implements ActionListener {
             input.setText(in + userInput + "^2");
         }
         if (e.equals("AC")) input.setText("");
+        if(e.equals("«")) {
+            String str = input.getText();
+            StringBuilder str2 = new StringBuilder();
+            for (int i = 0; i < (str.length() - 1); i++) {
+                str2.append(str.charAt(i));
+            }
+            if (str2.toString().equals("")) {
+                input.setText("0");
+            } else {
+                input.setText(str2.toString());
+            }
+        }
+        if (e.equals("=")) {
+            if(countDigits(in) > MAX_DIGITS) {
+                input.setText("Error: number too big");
+            }
+            else {
+                String ans = "" + Eval(in);
+                try {
+                    input.setText(new DecimalFormat("##.####").format(Double.parseDouble(ans)));
+                } catch (Exception ex) {
+                    ans = ex.getMessage();
+                    input.setText(ans);
+                }
+            }
+        }
     }
 
     public double Factorial(double n) {
         if (n == 0) return 1;
         if (n == 1) return 1;
         return n * Factorial(n - 1);
+    }
+    //n choose k (Binomial coefficient)
+    public double Binomial(double n, double k){
+        if(n < k || k < 0 || n < 0) throw new IllegalArgumentException("Error! 0 ≤ k ≤ n");
+        double x = applyOperator(Factorial(k), '*', Factorial(n - k));
+        double y = Factorial(n);
+        return applyOperator(x,'/',y);
     }
 
     public double Eval(String expression) throws IllegalArgumentException, ArithmeticException {
@@ -292,16 +331,19 @@ public class Calculator implements ActionListener {
                     index = 1;
                     String tmp = expToStr[i + 1];
                     try {
-                        double x = Double.valueOf(tmp);
-                        x = Math.toRadians(x);
+                        double x = Double.parseDouble(tmp);
+
                         switch (token) {
                             case "Cos":
+                                x = Math.toRadians(x);
                                 output.add("" + Math.cos(x));
                                 break;
                             case "Sin":
+                                x = Math.toRadians(x);
                                 output.add("" + Math.sin(x));
                                 break;
                             case "Tan":
+                                x = Math.toRadians(x);
                                 if (x < -1.5 || x > 1.5) {
                                     input.setText("Error! Tan(90) is Undefined");
                                     throw new ArithmeticException("Tan(90) is Undefined");
@@ -309,14 +351,13 @@ public class Calculator implements ActionListener {
                                 } else output.add("" + Math.tan(x));
                                 break;
                             case "Log":
-                                output.add("" + Math.log(x));
+                                output.add("" + Math.log10(x));
                                 break;
                             case "Ln":
-                                output.add("" + Math.log10(x));
+                                output.add("" + Math.log(x));
                                 break;
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println("here");
                         input.setText(e.getMessage());
                     }
                 } else {
@@ -361,6 +402,36 @@ public class Calculator implements ActionListener {
         Win.add(button);
         return button;
     }
+
+
+}
+
+enum Memory implements ActionListener{
+    private static BigDecimal num = null;
+    M_plus{
+        public void actionPerformed(ActionEvent e) {
+            BigDecimal num2 = new BigDecimal(CalcUtils.getNum());
+            if (num != null) num = num.add(num2);
+            else num = num2;
+
+            if (BigDecimal.ZERO.equals(num)) {
+                num = null;
+            }
+        }
+    },
+    M_RECALL{
+        public void actionPerformed(ActionEvent e) {
+            if (num != null) CalcUtils.setNum(num.toString());
+        }
+    },
+    M_CLEAR{
+        public void actionPerformed(ActionEvent e) {
+            num = null;
+        }
+    };
+
+    @Override
+    public void actionPerformed(ActionEvent e) { }
 
 
 }
