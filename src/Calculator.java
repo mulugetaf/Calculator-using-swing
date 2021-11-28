@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
-import java.math.BigDecimal;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
@@ -10,14 +11,14 @@ import java.awt.event.ActionListener;
 public class Calculator implements ActionListener {
     private final JFrame Win;
     private final Map<String, Integer> precedence;
+    private final int MAX_DIGITS = 18;
     private JTextField input;
     private JButton btn0, btn1, btn2, btn3, btn4,
             btn5, btn6, btn7, btn8, btn9, equal, btnMul,
             btnDiv, btnAdd, btnSub, btnxPow, sqrtx, btnPow, btnDel, btnSin,
             btnCos, btnTan, btnCr, btnLog, btnLn, btnDot, btnBracOpen, btnBracClose,
             btnMplus, btnMs, btnMr, btnMc, shiftRig, shiftLef, btnAc;
-
-    private static final int MAX_DIGITS = 18;
+    private double MemoryVal;
 //    private Stack<Integer> value, operator;
 
     public Calculator() {
@@ -29,7 +30,7 @@ public class Calculator implements ActionListener {
         Win.setLayout(null);
         Win.setResizable(false);
         Win.setVisible(true);
-
+        Win.setBackground(Color.BLACK);
         precedence = new HashMap<>();
         precedence.put("+", 2);
         precedence.put("-", 2);
@@ -39,19 +40,6 @@ public class Calculator implements ActionListener {
 
     }
 
-    public  int countDigits(String str) {
-        int count = 0;
-        for (int i = 0; i < str.length(); i++) {
-            //check if charAt(i) is number
-            if (str.charAt(i) >= '0' && str.charAt(i) <= '9') {
-                count++;
-                if(count > MAX_DIGITS) return count;
-            }
-            else count = 0;
-
-        }
-        return count;
-    }
     public static double applyOperator(double b, char op, double a) {
 
         switch (op) {
@@ -94,13 +82,26 @@ public class Calculator implements ActionListener {
 //        str=str.replace("÷","/");
 //        System.out.println(str);
         Calculator cal = new Calculator();
-        cal.Eval("3+3");
+//        cal.Eval("340√2");
 
 //        double n = 8,k=4;
 //        double ans = applyOperator(applyOperator(cal.Factorial(k), '*', cal.Factorial(n - k)), '/', cal.Factorial(n));
 //        System.out.println(ans);
 //        double ans = cal.Eval(str);
 //        System.out.println(ans);
+    }
+
+    public int countDigits(String str) {
+        int count = 0;
+        for (int i = 0; i < str.length(); i++) {
+            //check if charAt(i) is number
+            if (str.charAt(i) >= '0' && str.charAt(i) <= '9') {
+                count++;
+                if (count > MAX_DIGITS) return count;
+            } else count = 0;
+
+        }
+        return count;
     }
 
     private void init() {
@@ -146,103 +147,170 @@ public class Calculator implements ActionListener {
         btnAc = initButton("AC", new int[]{305, 120, 60, 60}, this);
         equal = initButton("=", new int[]{235, 470, 60, 60}, this);
 
+        //set AC button color blue
+        btnAc.setBackground(new Color(0, 0, 153));
+        btnAc.setForeground(Color.white);
+
         Win.add(input);
     }
 
     public void actionPerformed(ActionEvent ae) {
         String e = ae.getActionCommand();
         String in = input.getText();
-        if (e.equals("0")) input.setText(in + "0");
-        if (e.equals("1")) input.setText(in + "1");
-        if (e.equals("2")) input.setText(in + "2");
-        if (e.equals("3")) input.setText(in + "3");
-        if (e.equals("4")) input.setText(in + "4");
-        if (e.equals("5")) input.setText(in + "5");
-        if (e.equals("6")) input.setText(in + "6");
-        if (e.equals("7")) input.setText(in + "7");
-        if (e.equals("8")) input.setText(in + "8");
-        if (e.equals("9")) input.setText(in + "9");
-        if(e.equals("•")) input.setText(in + ".");
-
-        if (e.equals("+")) input.setText(in + "+");
-        if (e.equals("-")) input.setText(in + "-");
-        if (e.equals("*") || e.equals("×")) input.setText(in + "*");
-        if (e.equals("÷") || e.equals("/")) input.setText(in + "/");
-        if (e.equals("^")) input.setText(in + "^");
-
-
-        if (e.equals("C")) input.setText("");
-        if (e.equals("√")) input.setText(in + "√");
-
-        if (e.equals("^")) input.setText(in + "");
-        if (e.equals("Log")) input.setText(in + "Log");
-        if (e.equals("Sin")) input.setText(in + "Sin");
-        if (e.equals("Cos")) input.setText(in + "Cos");
-        if (e.equals("Tan")) input.setText(in + "Tan");
-        if (e.equals("nCr")) {
-            input.setText(in + "(___)");
-            int count = 0;
-            String userInput = "";
-            double n = 0, k = 0;
-            ImageIcon icon = new ImageIcon("src/binom.PNG");
-            try {
-            while (count < 2) {
-                if (count == 0) {
-
-                    userInput = (String) JOptionPane.showInputDialog(null, "Please enter a number", null, JOptionPane.INFORMATION_MESSAGE,
-                            icon, null, "");
-
-                    n = Double.parseDouble(userInput);
-                    input.setText(in + n + "C");
-                    count++;
-                } else {
-                    userInput = (String) JOptionPane.showInputDialog(null, "Please enter a number",
-                            null, JOptionPane.INFORMATION_MESSAGE, icon, null, "");
-
-                    k = Double.parseDouble(userInput);
-                    input.setText(in + n + "C" + k);
-                    count++;
-                }
-            }
-                //nCk={n! / k!(n-k)!}
-                String nCr = "" + Binomial(n,k);
-                input.setText(in + nCr);
-            }
-            catch (IllegalArgumentException ex){input.setText(ex.getMessage());}
-
-        }
-        if (e.equals("x^2")) {
-            input.setText(in + "__^2    ");
-            String userInput = (String) JOptionPane.showInputDialog("Please enter a number");
-            input.setText(in + userInput + "^2");
-        }
-        if (e.equals("AC")) input.setText("");
-        if(e.equals("«")) {
-            String str = input.getText();
-            StringBuilder str2 = new StringBuilder();
-            for (int i = 0; i < (str.length() - 1); i++) {
-                str2.append(str.charAt(i));
-            }
-            if (str2.toString().equals("")) {
-                input.setText("0");
-            } else {
-                input.setText(str2.toString());
-            }
-        }
-        if (e.equals("=")) {
-            if(countDigits(in) > MAX_DIGITS) {
-                input.setText("Error: number too big");
-            }
-            else {
-                String ans = "" + Eval(in);
+        if (input.getText().equals("0.0")) in = "";
+        else in = input.getText();
+        switch (e) {
+            case "0":
+                input.setText(in + "0");
+                break;
+            case "1":
+                input.setText(in + "1");
+                break;
+            case "2":
+                input.setText(in + "2");
+                break;
+            case "3":
+                input.setText(in + "3");
+                break;
+            case "4":
+                input.setText(in + "4");
+                break;
+            case "5":
+                input.setText(in + "5");
+                break;
+            case "6":
+                input.setText(in + "6");
+                break;
+            case "7":
+                input.setText(in + "7");
+                break;
+            case "8":
+                input.setText(in + "8");
+                break;
+            case "9":
+                input.setText(in + "9");
+                break;
+            case "•":
+                input.setText(in + ".");
+                break;
+            case "+":
+                input.setText(in + "+");
+                break;
+            case "-":
+                input.setText(in + "-");
+                break;
+            case "*":
+            case "×":
+                input.setText(in + "*");
+                break;
+            case "÷":
+            case "/":
+                input.setText(in + "/");
+                break;
+            case "^":
+                input.setText(in + "^");
+                break;
+            case "(":
+                input.setText(in + "(");
+                break;
+            case ")":
+                input.setText(in + ")");
+                break;
+            case "C":
+                input.setText("");
+                break;
+            case "√":
+                input.setText(in + "√");
+                break;
+            case "Log":
+                input.setText(in + "Log");
+                break;
+            case "Sin":
+                input.setText(in + "Sin");
+                break;
+            case "Cos":
+                input.setText(in + "Cos");
+                break;
+            case "Tan":
+                input.setText(in + "Tan");
+                break;
+            case "nCr": {
+                input.setText(in + "(___)");
+                int count = 0;
+                String userInput = "";
+                double n = 0, k = 0;
+                ImageIcon icon = new ImageIcon("src/binom.PNG");
                 try {
-                    input.setText(new DecimalFormat("##.####").format(Double.parseDouble(ans)));
-                } catch (Exception ex) {
-                    ans = ex.getMessage();
-                    input.setText(ans);
+                    while (count < 2) {
+                        if (count == 0) {
+
+                            userInput = (String) JOptionPane.showInputDialog(null, "Please enter a number", null, JOptionPane.INFORMATION_MESSAGE,
+                                    icon, null, "");
+
+                            n = Double.parseDouble(userInput);
+                            input.setText(in + n + "C");
+                            count++;
+                        } else {
+                            userInput = (String) JOptionPane.showInputDialog(null, "Please enter a number",
+                                    null, JOptionPane.INFORMATION_MESSAGE, icon, null, "");
+
+                            k = Double.parseDouble(userInput);
+                            input.setText(in + n + "C" + k);
+                            count++;
+                        }
+                    }
+                    //nCk={n! / k!(n-k)!}
+                    String nCr = "" + Binomial(n, k);
+                    input.setText(in + nCr);
+                } catch (IllegalArgumentException ex) {
+                    input.setText(ex.getMessage());
                 }
+
+                break;
             }
+            case "x^2": {
+                input.setText(in + "__^2    ");
+                String userInput = (String) JOptionPane.showInputDialog("Please enter a number");
+                input.setText(in + userInput + "^2");
+                break;
+            }
+            case "AC":
+                input.setText("");
+                break;
+            case "«":
+                String str = input.getText();
+                StringBuilder str2 = new StringBuilder();
+                for (int i = 0; i < (str.length() - 1); i++) {
+                    str2.append(str.charAt(i));
+                }
+                if (str2.toString().equals("")) {
+                    input.setText("0");
+                } else {
+                    input.setText(str2.toString());
+                }
+                break;
+            case "=":
+                if (countDigits(in) > MAX_DIGITS) {
+                    input.setText("Error: number too big");
+                } else {
+                    String ans = "";
+                    try {
+                        ans = "" + Eval(in);
+                        input.setText(new DecimalFormat("##.####").format(Double.parseDouble(ans)));
+                    } catch (Exception ex) {
+                        ans = ex.getMessage();
+                        input.setText(ans);
+                    }
+                }
+                break;
+            case "MS":
+            case "MR":
+            case "M+":
+            case "M-":
+                MemoryManager(ae);
+                break;
         }
+
     }
 
     public double Factorial(double n) {
@@ -250,22 +318,24 @@ public class Calculator implements ActionListener {
         if (n == 1) return 1;
         return n * Factorial(n - 1);
     }
+
     //n choose k (Binomial coefficient)
-    public double Binomial(double n, double k){
-        if(n < k || k < 0 || n < 0) throw new IllegalArgumentException("Error! 0 ≤ k ≤ n");
+    public double Binomial(double n, double k) {
+        if (n < k || k < 0 || n < 0) throw new IllegalArgumentException("Error! 0 ≤ k ≤ n");
         double x = applyOperator(Factorial(k), '*', Factorial(n - k));
         double y = Factorial(n);
-        return applyOperator(x,'/',y);
+        return applyOperator(x, '/', y);
     }
 
     public double Eval(String expression) throws IllegalArgumentException, ArithmeticException {
+        if (expression.length() == 0) return 0;
+
         if (expression.charAt(0) == '-') expression = "0" + expression;
         expression = expression.replace("(-", "(0-");
         //(?<=Cos)|" +
         //                "(?<=Sin)|(?<=Cos)|(?<=Tan)|(?<=Lan)|(?<=Ln)//|(?=Cos)|(?=Sin)|(?=Tan)|(?=Log)|(?=Ln)
         String splitReg = "(?<=[-+*/()^√]|(?<=Cos)|(?<=Sin)|(?<=Tan)|(?<=Log)|(?<=Ln)" +
                 "|(?=[-+*/()^√]))";
-        String chek = "((?<=Cos.()))";
         String[] expToStr = expression.replaceAll("\\s+", "").split(splitReg);
         //Stack for numbers
         Stack<Double> values = new Stack();
@@ -390,7 +460,9 @@ public class Calculator implements ActionListener {
             }
 
         }
-
+        if (1 != values.size()) {
+            throw new IllegalArgumentException("Invalid expression");
+        }
         return values.peek();
     }
 
@@ -403,35 +475,41 @@ public class Calculator implements ActionListener {
         return button;
     }
 
+    private void MemoryManager(ActionEvent ae) {
+        String e = ae.getActionCommand();
+        try {
+            switch (e) {
+                case "MS":
+                    MemoryVal = Double.parseDouble(input.getText());
+                    break;
+                case "MR":
 
-}
-
-enum Memory implements ActionListener{
-    private static BigDecimal num = null;
-    M_plus{
-        public void actionPerformed(ActionEvent e) {
-            BigDecimal num2 = new BigDecimal(CalcUtils.getNum());
-            if (num != null) num = num.add(num2);
-            else num = num2;
-
-            if (BigDecimal.ZERO.equals(num)) {
-                num = null;
+                    input.setText("" + MemoryVal);
+                    break;
+                case "MC":
+                    MemoryVal = 0;
+                    break;
+                case "M+":
+                    input.setText("");
+                    String in = input.getText();
+                    double num2 = Double.parseDouble(in);
+                    if (MemoryVal != 0) {
+                        MemoryVal = applyOperator(MemoryVal, '+', num2);
+                        input.setText("" + MemoryVal);
+                    } else {
+                        MemoryVal = num2;
+                    }
+                    break;
             }
-        }
-    },
-    M_RECALL{
-        public void actionPerformed(ActionEvent e) {
-            if (num != null) CalcUtils.setNum(num.toString());
-        }
-    },
-    M_CLEAR{
-        public void actionPerformed(ActionEvent e) {
-            num = null;
-        }
-    };
+            if (e.equals("M-")) {
+                input.setText("");
+                String in = input.getText();
+                double num2 = Double.parseDouble(in);
+                input.setText("" + applyOperator(MemoryVal, '-', num2));
+            }
 
-    @Override
-    public void actionPerformed(ActionEvent e) { }
-
-
+        } catch (IllegalArgumentException ex) {
+        }
+    }
 }
+
