@@ -1,3 +1,5 @@
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -6,29 +8,41 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * implamtion of Calculator Program in Java Swing/JFrame
+ *  and Shunting-yard algorithm
+ *
+ * @author Mulugeta Fanta
+ */
 public class Calculator implements ActionListener {
+    //Declaring variables:
+    private static JTextField input;
+    private static JButton btn0, btn1, btn2, btn3, btn4,
+            btn5, btn6, btn7, btn8, btn9, equal, btnMul,
+            btnDiv, btnAdd, btnSub, btnxPow, sqrtx, btnPow, btnOff, btnSin,
+            btnCos, btnTan, btnCr, btnLog, btnLn, btnDot, btnBracOpen, btnBracClose,
+            btnMplus, btnMs, btnMr, btnMc, btnOn, btnDel, btnAc;
+
     private final JFrame Win;
     private final Map<String, Integer> precedence;
     private final int MAX_DIGITS = 18;
-    private JTextField input;
-    private JButton btn0, btn1, btn2, btn3, btn4,
-            btn5, btn6, btn7, btn8, btn9, equal, btnMul,
-            btnDiv, btnAdd, btnSub, btnxPow, sqrtx, btnPow, btnDel, btnSin,
-            btnCos, btnTan, btnCr, btnLog, btnLn, btnDot, btnBracOpen, btnBracClose,
-            btnMplus, btnMs, btnMr, btnMc, shiftRig, shiftLef, btnAc;
+    private final JButton[] buttons;
     private double MemoryVal;
-//    private Stack<Integer> value, operator;
 
     public Calculator() {
+
         Win = new JFrame("Calculator");
-        this.init();
+        //initialize buttons
+        init();
+
         Win.setSize(400, 700);
         Win.setLocationRelativeTo(null);//set JFrame to appear centered
         Win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Win.setLayout(null);
         Win.setResizable(false);
         Win.setVisible(true);
-        Win.getContentPane().setBackground(new Color(68, 68, 68));
+        Win.getContentPane().setBackground(new Color(96, 96, 96));
+
         precedence = new HashMap<>();
         precedence.put("+", 2);
         precedence.put("-", 2);
@@ -36,9 +50,16 @@ public class Calculator implements ActionListener {
         precedence.put("/", 3);
         precedence.put("^", 4);
 
+        buttons = new JButton[]{btnMc, btnMr, btnMs, btnMplus, btnOn,
+                btnxPow, sqrtx, btnPow, btnCr, btnOff,
+                btnLn, btnLog, btnTan, btnCos, btnSin,
+                btn7, btn8, btn9, btnDel, btnAc,
+                btn4, btn5, btn6, btnMul, btnDiv,
+                btn1, btn2, btn3, btnAdd, btnSub,
+                btn0, btnDot, btnBracOpen, btnBracClose, equal};
     }
 
-    public static double applyOperator(double b, char op, double a) {
+    public double applyOperator(double b, char op, double a) {
 
         switch (op) {
             case '+':
@@ -60,35 +81,31 @@ public class Calculator implements ActionListener {
         }
     }
 
-    /*
-    use Shunting-yard algorithm to parsing mathematical expressions
-    specified in infix notation.
-    source:https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+    /**
+     *
      */
-    public static void main(String[] args) throws Exception {
-//        JFrame frame = new JFrame();
-//        ImageIcon icon = new ImageIcon("src/binom.PNG");
-//        JLabel label = new JLabel(icon);
-//        frame.add(label);
-//        frame.setDefaultCloseOperation
-//                (JFrame.EXIT_ON_CLOSE);
-//        frame.pack();
-//        frame.setVisible(true);
-//        String str = "nCr";
-//        String str2 = "1+4^2^3*2+2-2";
-//        String s = "÷";
-//        str=str.replace("÷","/");
-//        System.out.println(str);
-        Calculator cal = new Calculator();
-//        cal.Eval("340√2");
-
-//        double n = 8,k=4;
-//        double ans = applyOperator(applyOperator(cal.Factorial(k), '*', cal.Factorial(n - k)), '/', cal.Factorial(n));
-//        System.out.println(ans);
-//        double ans = cal.Eval(str);
-//        System.out.println(ans);
+    //set all buttons enable
+    public void enable() {
+        for (JButton button : buttons)
+            button.setEnabled(true);
     }
 
+    /**
+     *
+     */
+    //set all buttons disable except ON button
+    public void disable() {
+        System.out.println("dis");
+        for (JButton button : buttons)
+            button.setEnabled(false);
+
+        btnOn.setEnabled(true);
+    }
+
+    /**
+     * @param str
+     * @return
+     */
     public int countDigits(String str) {
         int count = 0;
         for (int i = 0; i < str.length(); i++) {
@@ -102,18 +119,24 @@ public class Calculator implements ActionListener {
         return count;
     }
 
-    private void init() {
+    /**
+     *
+     */
+    public void init() {
         input = new JTextField("");
         input.setBackground(Color.white);
         input.setEditable(false);
         input.setFont(new Font("SansSerif ", Font.PLAIN, 25));
         input.setBounds(26, 30, 340, 70);
 
+        // btnOn = initButton("ON", new int[]{305, 120, 60, 60}, new Color(0, 100, 0), Color.white, this);
+
+
         btn0 = initButton("0", new int[]{25, 540, 60, 60}, Color.white, Color.black, this);
-        btnDot = initButton("•", new int[]{95, 540, 60, 60}, Color.white, Color.black, this);
-        btnBracOpen = initButton("(", new int[]{165, 540, 60, 60}, Color.white, Color.black, this);
-        btnBracClose = initButton(")", new int[]{235, 540, 60, 60}, Color.white, Color.black, this);
-        equal = initButton("=", new int[]{305, 540, 60, 60}, Color.white, Color.black, this);
+        btnDot = initButton("•", new int[]{95, 540, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        btnBracOpen = initButton("(", new int[]{165, 540, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        btnBracClose = initButton(")", new int[]{235, 540, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        equal = initButton("=", new int[]{305, 540, 60, 60}, new Color(25, 25, 25), Color.white, this);
 
         btn1 = initButton("1", new int[]{25, 470, 60, 60}, Color.white, Color.black, this);
         btn2 = initButton("2", new int[]{95, 470, 60, 60}, Color.white, Color.black, this);
@@ -130,36 +153,39 @@ public class Calculator implements ActionListener {
         btn7 = initButton("7", new int[]{25, 330, 60, 60}, Color.white, Color.black, this);
         btn8 = initButton("8", new int[]{95, 330, 60, 60}, Color.white, Color.black, this);
         btn9 = initButton("9", new int[]{165, 330, 60, 60}, Color.white, Color.black, this);
-        shiftLef = initButton("DEL", new int[]{235, 330, 60, 60}, new Color(100, 0, 0), Color.white, this);
+        btnDel = initButton("DEL", new int[]{235, 330, 60, 60}, new Color(100, 0, 0), Color.white, this);
         //set bg color to green & fg to white
         btnAc = initButton("AC", new int[]{305, 330, 60, 60}, new Color(0, 100, 0), Color.white, this);
 
 
-        btnxPow = initButton("x^2", new int[]{25, 190, 60, 60}, Color.white, Color.black, this);
-        sqrtx = initButton("√", new int[]{95, 190, 60, 60}, Color.white, Color.black, this);
-        btnPow = initButton("^", new int[]{165, 190, 60, 60}, Color.white, Color.black, this);
-        btnCr = initButton("nCr", new int[]{235, 190, 60, 60}, Color.white, Color.black, this);
-        btnDel = initButton("OFF", new int[]{305, 190, 60, 60}, Color.white, Color.black, this);
+        btnxPow = initButton("x^2", new int[]{25, 190, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        sqrtx = initButton("√", new int[]{95, 190, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        btnPow = initButton("^", new int[]{165, 190, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        btnCr = initButton("nCr", new int[]{235, 190, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        btnOff = initButton("OFF", new int[]{305, 190, 60, 60}, new Color(255, 0, 0), Color.white, this);
 
 
-        btnSin = initButton("Sin", new int[]{305, 260, 60, 60}, Color.white, Color.black, this);
-        btnCos = initButton("Cos", new int[]{235, 260, 60, 60}, Color.white, Color.black, this);
-        btnTan = initButton("Tan", new int[]{165, 260, 60, 60}, Color.white, Color.black, this);
-        btnLog = initButton("Log", new int[]{95, 260, 60, 60}, Color.white, Color.black, this);
-        btnLn = initButton("ln", new int[]{25, 260, 60, 60}, Color.white, Color.black, this);
+        btnSin = initButton("Sin", new int[]{305, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        btnCos = initButton("Cos", new int[]{235, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        btnTan = initButton("Tan", new int[]{165, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        btnLog = initButton("Log", new int[]{95, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        btnLn = initButton("ln", new int[]{25, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
 
 
         btnMc = initButton("MC", new int[]{25, 120, 60, 60}, new Color(100, 0, 0), Color.white, this);
         btnMr = initButton("MR", new int[]{95, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
         btnMs = initButton("MS", new int[]{165, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
         btnMplus = initButton("M+", new int[]{235, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
-        shiftRig = initButton("ON", new int[]{305, 120, 60, 60}, Color.white, Color.black, this);
+        btnOn = initButton("ON", new int[]{305, 120, 60, 60}, new Color(0, 100, 0), Color.white, this);
 
         //r=238,g=238,b=238
 
         Win.add(input);
     }
 
+    /**
+     * @param ae
+     */
     public void actionPerformed(ActionEvent ae) {
         String e = ae.getActionCommand();
         String in = input.getText();
@@ -315,15 +341,32 @@ public class Calculator implements ActionListener {
             case "M-":
                 MemoryManager(ae);
                 break;
+            case "ON":
+                input.setText("0");
+                enable();
+                break;
+            case "OFF":
+                input.setText("");
+                disable();
+                break;
         }
     }
 
+    /**
+     * @param n
+     * @return
+     */
     public double Factorial(double n) {
         if (n == 0) return 1;
         if (n == 1) return 1;
         return n * Factorial(n - 1);
     }
 
+    /**
+     * @param n
+     * @param k
+     * @return
+     */
     //n choose k (Binomial coefficient)
     public double Binomial(double n, double k) {
         if (n < k || k < 0 || n < 0) throw new IllegalArgumentException("Error! 0 ≤ k ≤ n");
@@ -332,13 +375,24 @@ public class Calculator implements ActionListener {
         return applyOperator(x, '/', y);
     }
 
+    /**
+     * @param expression
+     * @return
+     * @throws IllegalArgumentException
+     * @throws ArithmeticException
+     */
+    /*
+    use Shunting-yard algorithm to parsing mathematical expressions
+    specified in infix notation.
+    source:https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+     */
     public double Eval(String expression) throws IllegalArgumentException, ArithmeticException {
         if (expression.length() == 0) return 0;
 
         if (expression.charAt(0) == '-') expression = "0" + expression;
         expression = expression.replace("(-", "(0-");
-        //(?<=Cos)|" +
-        //                "(?<=Sin)|(?<=Cos)|(?<=Tan)|(?<=Lan)|(?<=Ln)//|(?=Cos)|(?=Sin)|(?=Tan)|(?=Log)|(?=Ln)
+
+        //regular expression to split input
         String splitReg = "(?<=[-+*/()^√]|(?<=Cos)|(?<=Sin)|(?<=Tan)|(?<=Log)|(?<=Ln)" +
                 "|(?=[-+*/()^√]))";
         String[] expToStr = expression.replaceAll("\\s+", "").split(splitReg);
@@ -346,11 +400,10 @@ public class Calculator implements ActionListener {
         Stack<Double> values = new Stack();
         //Stack for Operators
         Stack<String> operator = new Stack();
-        //output
+        //List for output
         List<String> output = new ArrayList();
         //regex to chek if value is type double
         String reg = "([0-9]*[.])?[0-9]+";
-
 
         for (int i = 0; i < expToStr.length; i++) {
             String token = expToStr[i];
@@ -471,7 +524,15 @@ public class Calculator implements ActionListener {
         return values.peek();
     }
 
-    private JButton initButton(String name, int[] Bounds, Color bgColor, Color fgColor, ActionListener e) {
+    /**
+     * @param name
+     * @param Bounds
+     * @param bgColor
+     * @param fgColor
+     * @param e
+     * @return
+     */
+    public JButton initButton(String name, int[] Bounds, Color bgColor, Color fgColor, ActionListener e) {
         JButton button = new JButton(name);
         button.setBounds(Bounds[0], Bounds[1], Bounds[2], Bounds[3]);
         button.setBackground(bgColor);
@@ -485,7 +546,10 @@ public class Calculator implements ActionListener {
         return button;
     }
 
-    private void MemoryManager(ActionEvent ae) {
+    /**
+     * @param ae 
+     */
+    public void MemoryManager(ActionEvent ae) {
         String e = ae.getActionCommand();
         try {
             switch (e) {
@@ -493,7 +557,6 @@ public class Calculator implements ActionListener {
                     MemoryVal = Double.parseDouble(input.getText());
                     break;
                 case "MR":
-
                     input.setText("" + MemoryVal);
                     break;
                 case "MC":
@@ -522,4 +585,3 @@ public class Calculator implements ActionListener {
         }
     }
 }
-
