@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 
 /**
  * implamtion of Calculator Program in Java Swing/JFrame
- *  and Shunting-yard algorithm
+ * using Shunting-yard algorithm
  *
  * @author Mulugeta Fanta
  */
@@ -21,7 +21,7 @@ public class Calculator implements ActionListener {
             btn5, btn6, btn7, btn8, btn9, equal, btnMul,
             btnDiv, btnAdd, btnSub, btnxPow, sqrtx, btnPow, btnOff, btnSin,
             btnCos, btnTan, btnCr, btnLog, btnLn, btnDot, btnBracOpen, btnBracClose,
-            btnMplus, btnMs, btnMr, btnMc, btnOn, btnDel, btnAc;
+            btnMplus, btnMinus, btnMs, btnMr, btnMc, btnOn, btnDel, btnAc;
 
     private final JFrame Win;
     private final Map<String, Integer> precedence;
@@ -50,8 +50,8 @@ public class Calculator implements ActionListener {
         precedence.put("/", 3);
         precedence.put("^", 4);
 
-        buttons = new JButton[]{btnMc, btnMr, btnMs, btnMplus, btnOn,
-                btnxPow, sqrtx, btnPow, btnCr, btnOff,
+        buttons = new JButton[]{btnMr, btnMs, btnMplus, btnMinus, btnOn,
+                btnxPow, sqrtx, btnPow, btnCr, btnMc,
                 btnLn, btnLog, btnTan, btnCos, btnSin,
                 btn7, btn8, btn9, btnDel, btnAc,
                 btn4, btn5, btn6, btnMul, btnDiv,
@@ -81,18 +81,13 @@ public class Calculator implements ActionListener {
         }
     }
 
-    /**
-     *
-     */
+
     //set all buttons enable
     public void enable() {
         for (JButton button : buttons)
             button.setEnabled(true);
     }
 
-    /**
-     *
-     */
     //set all buttons disable except ON button
     public void disable() {
         System.out.println("dis");
@@ -104,7 +99,7 @@ public class Calculator implements ActionListener {
 
     /**
      * @param str
-     * @return
+     * @return length of the input
      */
     public int countDigits(String str) {
         int count = 0;
@@ -120,7 +115,8 @@ public class Calculator implements ActionListener {
     }
 
     /**
-     *
+     * initialize all buttons,
+     * set font,color,width,height,x-coordinate,y-coordinate
      */
     public void init() {
         input = new JTextField("");
@@ -128,9 +124,6 @@ public class Calculator implements ActionListener {
         input.setEditable(false);
         input.setFont(new Font("SansSerif ", Font.PLAIN, 25));
         input.setBounds(26, 30, 340, 70);
-
-        // btnOn = initButton("ON", new int[]{305, 120, 60, 60}, new Color(0, 100, 0), Color.white, this);
-
 
         btn0 = initButton("0", new int[]{25, 540, 60, 60}, Color.white, Color.black, this);
         btnDot = initButton("•", new int[]{95, 540, 60, 60}, new Color(25, 25, 25), Color.white, this);
@@ -154,37 +147,34 @@ public class Calculator implements ActionListener {
         btn8 = initButton("8", new int[]{95, 330, 60, 60}, Color.white, Color.black, this);
         btn9 = initButton("9", new int[]{165, 330, 60, 60}, Color.white, Color.black, this);
         btnDel = initButton("DEL", new int[]{235, 330, 60, 60}, new Color(100, 0, 0), Color.white, this);
-        //set bg color to green & fg to white
         btnAc = initButton("AC", new int[]{305, 330, 60, 60}, new Color(0, 100, 0), Color.white, this);
-
 
         btnxPow = initButton("x^2", new int[]{25, 190, 60, 60}, new Color(25, 25, 25), Color.white, this);
         sqrtx = initButton("√", new int[]{95, 190, 60, 60}, new Color(25, 25, 25), Color.white, this);
         btnPow = initButton("^", new int[]{165, 190, 60, 60}, new Color(25, 25, 25), Color.white, this);
         btnCr = initButton("nCr", new int[]{235, 190, 60, 60}, new Color(25, 25, 25), Color.white, this);
-        btnOff = initButton("OFF", new int[]{305, 190, 60, 60}, new Color(255, 0, 0), Color.white, this);
-
+        btnMc = initButton("MC", new int[]{305, 190, 60, 60}, new Color(100, 0, 0), Color.white, this);
 
         btnSin = initButton("Sin", new int[]{305, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
         btnCos = initButton("Cos", new int[]{235, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
         btnTan = initButton("Tan", new int[]{165, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
         btnLog = initButton("Log", new int[]{95, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
-        btnLn = initButton("ln", new int[]{25, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        btnLn = initButton("Ln", new int[]{25, 260, 60, 60}, new Color(25, 25, 25), Color.white, this);
 
 
-        btnMc = initButton("MC", new int[]{25, 120, 60, 60}, new Color(100, 0, 0), Color.white, this);
-        btnMr = initButton("MR", new int[]{95, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
-        btnMs = initButton("MS", new int[]{165, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
-        btnMplus = initButton("M+", new int[]{235, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
-        btnOn = initButton("ON", new int[]{305, 120, 60, 60}, new Color(0, 100, 0), Color.white, this);
-
-        //r=238,g=238,b=238
+        btnMr = initButton("MR", new int[]{25, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
+        btnMs = initButton("MS", new int[]{95, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
+        btnMplus = initButton("M+", new int[]{165, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
+        btnMinus = initButton("M-", new int[]{235, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
+        btnOn = initButton("OFF", new int[]{305, 120, 60, 60}, new Color(0, 100, 0), Color.white, this);
 
         Win.add(input);
     }
 
     /**
-     * @param ae
+     * Perform action
+     *
+     * @param ae ActionEvent
      */
     public void actionPerformed(ActionEvent ae) {
         String e = ae.getActionCommand();
@@ -339,22 +329,27 @@ public class Calculator implements ActionListener {
             case "MR":
             case "M+":
             case "M-":
+            case "MC":
                 MemoryManager(ae);
                 break;
             case "ON":
                 input.setText("0");
                 enable();
+                btnOn.setText("OFF");
                 break;
             case "OFF":
                 input.setText("");
                 disable();
+                btnOn.setText("ON");
                 break;
         }
     }
 
     /**
-     * @param n
-     * @return
+     * method to find factorial of given number
+     *
+     * @param n given number
+     * @return factorial value of n
      */
     public double Factorial(double n) {
         if (n == 0) return 1;
@@ -363,11 +358,12 @@ public class Calculator implements ActionListener {
     }
 
     /**
-     * @param n
-     * @param k
-     * @return
+     * method to calculating the binomial coefficient of two integers
+     *
+     * @param n first given number
+     * @param k second given number
+     * @return n choose k (binomial coefficient of two integers)
      */
-    //n choose k (Binomial coefficient)
     public double Binomial(double n, double k) {
         if (n < k || k < 0 || n < 0) throw new IllegalArgumentException("Error! 0 ≤ k ≤ n");
         double x = applyOperator(Factorial(k), '*', Factorial(n - k));
@@ -376,17 +372,17 @@ public class Calculator implements ActionListener {
     }
 
     /**
-     * @param expression
-     * @return
-     * @throws IllegalArgumentException
-     * @throws ArithmeticException
+     * use Shunting-yard algorithm to parsing mathematical expressions
+     * specified in infix notation.
+     * source:https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+     *
+     * @param expression The given mathematical expression
+     * @return The given expression result
+     * @throws IllegalArgumentException invalid expression exception
+     * @throws ArithmeticException      error while try to divide by zero
+     * @throws NumberFormatException    error while try to parsing a number (string to double)
      */
-    /*
-    use Shunting-yard algorithm to parsing mathematical expressions
-    specified in infix notation.
-    source:https://en.wikipedia.org/wiki/Shunting-yard_algorithm
-     */
-    public double Eval(String expression) throws IllegalArgumentException, ArithmeticException {
+    public double Eval(String expression) throws IllegalArgumentException, ArithmeticException, NumberFormatException {
         if (expression.length() == 0) return 0;
 
         if (expression.charAt(0) == '-') expression = "0" + expression;
@@ -395,15 +391,15 @@ public class Calculator implements ActionListener {
         //regular expression to split input
         String splitReg = "(?<=[-+*/()^√]|(?<=Cos)|(?<=Sin)|(?<=Tan)|(?<=Log)|(?<=Ln)" +
                 "|(?=[-+*/()^√]))";
-        String[] expToStr = expression.replaceAll("\\s+", "").split(splitReg);
-        //Stack for numbers
-        Stack<Double> values = new Stack();
-        //Stack for Operators
-        Stack<String> operator = new Stack();
-        //List for output
-        List<String> output = new ArrayList();
         //regex to chek if value is type double
         String reg = "([0-9]*[.])?[0-9]+";
+        String[] expToStr = expression.replaceAll("\\s+", "").split(splitReg);
+        //Stack for numbers
+        Stack<Double> values = new Stack<>();
+        //Stack for Operators
+        Stack<String> operator = new Stack<>();
+        //List for output
+        List<String> output = new ArrayList<>();
 
         for (int i = 0; i < expToStr.length; i++) {
             String token = expToStr[i];
@@ -447,11 +443,11 @@ public class Calculator implements ActionListener {
                 } else {
                     //throw exception if there operator stand alone
                     throw new IllegalArgumentException("Invalid Expression:" + token);
-
                 }
                 i = i + 1;
-            } else if (token.matches(reg)) {
-                //if token is number
+            }
+            //if token is number
+            else if (token.matches(reg)) {
                 output.add(token);
             } else {
                 int index = 0;
@@ -460,9 +456,9 @@ public class Calculator implements ActionListener {
                     String tmp = expToStr[i + 1];
                     try {
                         double x = Double.parseDouble(tmp);
-
                         switch (token) {
                             case "Cos":
+                                //conver x to radian
                                 x = Math.toRadians(x);
                                 output.add("" + Math.cos(x));
                                 break;
@@ -473,9 +469,7 @@ public class Calculator implements ActionListener {
                             case "Tan":
                                 x = Math.toRadians(x);
                                 if (x < -1.5 || x > 1.5) {
-                                    input.setText("Error! Tan(90) is Undefined");
                                     throw new ArithmeticException("Tan(90) is Undefined");
-
                                 } else output.add("" + Math.tan(x));
                                 break;
                             case "Log":
@@ -489,9 +483,9 @@ public class Calculator implements ActionListener {
                         input.setText(e.getMessage());
                     }
                 } else {
-                    throw new IllegalArgumentException();
+                    //if cos,sin,tan,ln,log  standalone (with no number after)
+                    throw new IllegalArgumentException("Invalid Expression:" + token);
                 }
-
                 i = i + index;
             }
         }
@@ -506,7 +500,6 @@ public class Calculator implements ActionListener {
                 try {
                     values.push(Double.parseDouble(token));
                 } catch (NumberFormatException e) {
-                    //not a double
                     input.setText(e.getMessage());
                     throw e;
                 }
@@ -525,11 +518,11 @@ public class Calculator implements ActionListener {
     }
 
     /**
-     * @param name
-     * @param Bounds
-     * @param bgColor
-     * @param fgColor
-     * @param e
+     * @param name    the name of a JButton
+     * @param Bounds  the bounds of a JButton
+     * @param bgColor the background color of a JButton
+     * @param fgColor the foreground color of a JButton
+     * @param e       the actionListener to a button.
      * @return
      */
     public JButton initButton(String name, int[] Bounds, Color bgColor, Color fgColor, ActionListener e) {
@@ -538,6 +531,7 @@ public class Calculator implements ActionListener {
         button.setBackground(bgColor);
         button.setForeground(fgColor);
         button.addActionListener(e);
+        //if button is for numbers set font to Bold
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9') {
             button.setFont(new Font("Arial", Font.BOLD, 18));
         }
@@ -547,12 +541,15 @@ public class Calculator implements ActionListener {
     }
 
     /**
-     * @param ae 
+     * memory manager when clicked MS,MR.MC.M+,M-
+     *
+     * @param e the actionListener to a button.
      */
-    public void MemoryManager(ActionEvent ae) {
-        String e = ae.getActionCommand();
+    public void MemoryManager(ActionEvent e) {
+        String ac = e.getActionCommand();
+        String in = input.getText();
         try {
-            switch (e) {
+            switch (ac) {
                 case "MS":
                     MemoryVal = Double.parseDouble(input.getText());
                     break;
@@ -563,8 +560,6 @@ public class Calculator implements ActionListener {
                     MemoryVal = 0;
                     break;
                 case "M+":
-                    input.setText("");
-                    String in = input.getText();
                     double num2 = Double.parseDouble(in);
                     if (MemoryVal != 0) {
                         MemoryVal = applyOperator(MemoryVal, '+', num2);
@@ -573,15 +568,17 @@ public class Calculator implements ActionListener {
                         MemoryVal = num2;
                     }
                     break;
+                case "M-":
+                    num2 = Double.parseDouble(in);
+                    if (MemoryVal != 0) {
+                        MemoryVal = applyOperator(num2, '-', MemoryVal);
+                        input.setText("" + MemoryVal);
+                    } else {
+                        MemoryVal = -num2;
+                    }
+                    break;
             }
-            if (e.equals("M-")) {
-                input.setText("");
-                String in = input.getText();
-                double num2 = Double.parseDouble(in);
-                input.setText("" + applyOperator(MemoryVal, '-', num2));
-            }
-
-        } catch (IllegalArgumentException ex) {
+        } catch (NumberFormatException ex) {
         }
     }
 }
