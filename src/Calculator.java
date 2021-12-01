@@ -8,6 +8,7 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 /**
  * implamtion of Calculator Program in Java Swing/JFrame
  * using Shunting-yard algorithm
@@ -130,18 +131,23 @@ public class Calculator implements ActionListener {
         btnBracOpen = initButton("(", new int[]{165, 540, 60, 60}, new Color(25, 25, 25), Color.white, this);
         btnBracClose = initButton(")", new int[]{235, 540, 60, 60}, new Color(25, 25, 25), Color.white, this);
         equal = initButton("=", new int[]{305, 540, 60, 60}, new Color(25, 25, 25), Color.white, this);
+        equal.setFont(new Font("SansSerif ", Font.PLAIN, 25));
 
         btn1 = initButton("1", new int[]{25, 470, 60, 60}, Color.white, Color.black, this);
         btn2 = initButton("2", new int[]{95, 470, 60, 60}, Color.white, Color.black, this);
         btn3 = initButton("3", new int[]{165, 470, 60, 60}, Color.white, Color.black, this);
         btnAdd = initButton("+", new int[]{235, 470, 60, 60}, new Color(0, 128, 255), Color.white, this);
+        btnAdd.setFont(new Font("SansSerif ", Font.PLAIN, 25));
         btnSub = initButton("-", new int[]{305, 470, 60, 60}, new Color(0, 128, 255), Color.white, this);
+        btnSub.setFont(new Font("SansSerif ", Font.PLAIN, 25));
 
         btn4 = initButton("4", new int[]{25, 400, 60, 60}, Color.white, Color.black, this);
         btn5 = initButton("5", new int[]{95, 400, 60, 60}, Color.white, Color.black, this);
         btn6 = initButton("6", new int[]{165, 400, 60, 60}, Color.white, Color.black, this);
-        btnMul = initButton("*", new int[]{235, 400, 60, 60}, new Color(0, 128, 255), Color.white, this);
+        btnMul = initButton("×", new int[]{235, 400, 60, 60}, new Color(0, 128, 255), Color.white, this);
+        btnMul.setFont(new Font("SansSerif ", Font.PLAIN, 25));
         btnDiv = initButton("÷", new int[]{305, 400, 60, 60}, new Color(0, 128, 255), Color.white, this);
+        btnDiv.setFont(new Font("SansSerif ", Font.PLAIN, 25));
 
         btn7 = initButton("7", new int[]{25, 330, 60, 60}, Color.white, Color.black, this);
         btn8 = initButton("8", new int[]{95, 330, 60, 60}, Color.white, Color.black, this);
@@ -166,7 +172,7 @@ public class Calculator implements ActionListener {
         btnMs = initButton("MS", new int[]{95, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
         btnMplus = initButton("M+", new int[]{165, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
         btnMinus = initButton("M-", new int[]{235, 120, 60, 60}, new Color(255, 255, 153), Color.black, this);
-        btnOn = initButton("OFF", new int[]{305, 120, 60, 60}, new Color(0, 100, 0), Color.white, this);
+        btnOn = initButton("OFF", new int[]{305, 120, 60, 60}, Color.red, Color.white, this);
 
         Win.add(input);
     }
@@ -261,7 +267,7 @@ public class Calculator implements ActionListener {
                 int count = 0;
                 String userInput = "";
                 double n = 0, k = 0;
-                ImageIcon icon = new ImageIcon("src/binom.PNG");
+                ImageIcon icon = new ImageIcon("images/binom.PNG");
                 try {
                     while (count < 2) {
                         if (count == 0) {
@@ -286,8 +292,10 @@ public class Calculator implements ActionListener {
                     input.setText(in + nCr);
                 } catch (IllegalArgumentException ex) {
                     input.setText(ex.getMessage());
+                    //if user didn't input any value
+                } catch (NullPointerException ex) {
+                    input.setText(in);
                 }
-
                 break;
             }
             case "x^2": {
@@ -336,10 +344,12 @@ public class Calculator implements ActionListener {
                 input.setText("0");
                 enable();
                 btnOn.setText("OFF");
+                btnOn.setBackground(Color.red);
                 break;
             case "OFF":
                 input.setText("");
                 disable();
+                btnOn.setBackground(Color.GREEN);
                 btnOn.setText("ON");
                 break;
         }
