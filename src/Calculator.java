@@ -1,5 +1,3 @@
-import org.jetbrains.annotations.NotNull;
-
 import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -185,6 +183,11 @@ public class Calculator implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         String e = ae.getActionCommand();
         String in = input.getText();
+        //regular expression to split input
+        String splitReg = "(?<=[-+*/()^√]|(?<=Cos)|(?<=Sin)|(?<=Tan)|(?<=Log)|(?<=Ln)" +
+                "|(?=[-+*/()^√]))";
+        String[] expToStr = (input.getText()).replaceAll("\\s+", "").split(splitReg);
+
         if (input.getText().equals("0.0")) in = "";
         else in = input.getText();
         switch (e) {
@@ -309,14 +312,22 @@ public class Calculator implements ActionListener {
                 break;
             case "DEL":
                 String str = input.getText();
-                StringBuilder str2 = new StringBuilder();
-                for (int i = 0; i < (str.length() - 1); i++) {
-                    str2.append(str.charAt(i));
+                int index = str.length() - 1;
+                while (index > 0) {
+                    if ((str.charAt(index) >= '0' && str.charAt(index) <= '9') || (precedence.containsKey("" + str.charAt(index)))) {
+                        str = str.substring(0, index);
+                        break;
+                    } else {
+                        index--;
+                    }
+
                 }
-                if (str2.toString().equals("")) {
+                str = str.substring(0, index);
+
+                if (str.equals("")) {
                     input.setText("0");
                 } else {
-                    input.setText(str2.toString());
+                    input.setText(str);
                 }
                 break;
             case "=":
@@ -352,6 +363,8 @@ public class Calculator implements ActionListener {
                 btnOn.setBackground(Color.GREEN);
                 btnOn.setText("ON");
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + e);
         }
     }
 
